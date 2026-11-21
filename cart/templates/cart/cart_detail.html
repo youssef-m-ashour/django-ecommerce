@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Your Cart{% endblock %}
+{% block content %}
+<h1>Your Shopping Cart</h1>
+
+{% with items=cart.get_items %}
+{% if items %}
+    <table class="cart-table">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Subtotal</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+                <tr>
+                    <td>{{ item.product.title }}</td>
+                    <td>{{ item.product.price }} EGP</td>
+                    <td>
+                        <div class="qty-controls">
+                            <form method="post" action="{% url 'cart:cart_decrease' item.product.id %}">
+                                {% csrf_token %}
+                                <button type="submit">-</button>
+                            </form>
+                            <span>{{ item.quantity }}</span>
+                            <form method="post" action="{% url 'cart:cart_increase' item.product.id %}">
+                                {% csrf_token %}
+                                <button type="submit" {% if item.quantity >= item.product.stock %}disabled{% endif %}>+</button>
+                            </form>
+                        </div>
+                    </td>
+                    <td>{{ item.subtotal }} EGP</td>
+                    <td>
+                        <form method="post" action="{% url 'cart:cart_remove' item.product.id %}">
+                            {% csrf_token %}
+                            <button class="btn danger" type="submit">Remove</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="cart-summary">
+        <p class="total">Total: {{ cart.get_total_price }} EGP</p>
+        <form method="post" action="{% url 'cart:cart_clear' %}" style="display:inline;">
+            {% csrf_token %}
+            <button class="btn secondary" type="submit">Clear Cart</button>
+        </form>
+        <a class="btn" href="{% url 'orders:checkout' %}">Proceed to Checkout</a>
+    </div>
+{% else %}
+    <p class="no-results">Your cart is empty. <a href="{% url 'shop:product_list' %}">Browse products</a>.</p>
+{% endif %}
+{% endwith %}
+{% endblock %}

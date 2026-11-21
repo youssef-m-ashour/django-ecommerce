@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Register{% endblock %}
+{% block content %}
+<h1>Create an Account</h1>
+<form class="styled-form" method="post">
+    {% csrf_token %}
+    {% for field in form %}
+        <div class="field">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}
+            {{ field.errors }}
+        </div>
+    {% endfor %}
+    <button class="btn" type="submit">Register</button>
+</form>
+<p style="text-align:center; margin-top:12px;">
+    Already have an account? <a href="{% url 'accounts:login' %}">Login here</a>
+</p>
+{% endblock %}

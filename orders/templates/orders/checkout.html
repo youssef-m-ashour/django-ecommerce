@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Checkout{% endblock %}
+{% block content %}
+<h1>Checkout</h1>
+
+<div style="display:flex; gap:30px; flex-wrap:wrap;">
+    <form class="styled-form" method="post" style="flex:1; min-width:280px;">
+        {% csrf_token %}
+        <h3>Shipping Information</h3>
+        {% for field in form %}
+            <div class="field">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {{ field.errors }}
+            </div>
+        {% endfor %}
+        <button class="btn" type="submit">Confirm Order</button>
+    </form>
+
+    <div style="flex:1; min-width:280px; background:#fff; padding:20px; border-radius:8px;">
+        <h3>Order Summary</h3>
+        <table class="order-items-table">
+            {% for item in cart.get_items %}
+                <tr>
+                    <td>{{ item.product.title }} &times; {{ item.quantity }}</td>
+                    <td>{{ item.subtotal }} EGP</td>
+                </tr>
+            {% endfor %}
+        </table>
+        <p class="total">Total: {{ cart.get_total_price }} EGP</p>
+    </div>
+</div>
+{% endblock %}

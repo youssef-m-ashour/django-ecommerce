@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Products{% endblock %}
+{% block content %}
+<h1>Our Products</h1>
+
+<div class="category-chips">
+    <a href="{% url 'shop:product_list' %}" class="{% if not active_category %}active{% endif %}">All</a>
+    {% for cat in categories %}
+        <a href="?category_slug={{ cat.slug }}"
+           class="{% if active_category.slug == cat.slug %}active{% endif %}">{{ cat.name }}</a>
+    {% endfor %}
+</div>
+
+<form class="filter-bar" method="get">
+    <div class="field">
+        <label for="{{ form.q.id_for_label }}">Search</label>
+        {{ form.q }}
+    </div>
+    <div class="field">
+        <label for="{{ form.category.id_for_label }}">Category</label>
+        {{ form.category }}
+    </div>
+    <div class="field">
+        <label for="{{ form.min_price.id_for_label }}">Min price</label>
+        {{ form.min_price }}
+    </div>
+    <div class="field">
+        <label for="{{ form.max_price.id_for_label }}">Max price</label>
+        {{ form.max_price }}
+    </div>
+    <div class="field">
+        <label for="{{ form.ordering.id_for_label }}">Sort by</label>
+        {{ form.ordering }}
+    </div>
+    <button type="submit">Apply</button>
+</form>
+
+{% if no_results %}
+    <p class="no-results">No products match your search. Try adjusting your filters.</p>
+{% else %}
+    <div class="product-grid">
+        {% for product in products %}
+            <div class="product-card">
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.title }}">
+                {% else %}
+                    <div class="no-image">No image</div>
+                {% endif %}
+                <div class="product-card-body">
+                    <span class="category-label">{{ product.category.name }}</span>
+                    <h3>{{ product.title }}</h3>
+                    <div class="price">{{ product.price }} EGP</div>
+                    <a class="btn" href="{% url 'shop:product_detail' product.slug %}">View Details</a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    {% if page_obj.has_other_pages %}
+        <div style="margin-top:24px; text-align:center;">
+            {% if page_obj.has_previous %}
+                <a href="?{{ request.GET.urlencode }}&page={{ page_obj.previous_page_number }}">&laquo; Prev</a>
+            {% endif %}
+            <span> Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }} </span>
+            {% if page_obj.has_next %}
+                <a href="?{{ request.GET.urlencode }}&page={{ page_obj.next_page_number }}">Next &raquo;</a>
+            {% endif %}
+        </div>
+    {% endif %}
+{% endif %}
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}{{ product.title }}{% endblock %}
+{% block content %}
+<div class="product-detail">
+    {% if product.image %}
+        <img src="{{ product.image.url }}" alt="{{ product.title }}">
+    {% else %}
+        <div class="no-image" style="width:320px;height:320px;display:flex;align-items:center;justify-content:center;">No image</div>
+    {% endif %}
+    <div class="product-detail-info">
+        <span class="category-label">{{ product.category.name }}</span>
+        <h1>{{ product.title }}</h1>
+        <div class="price">{{ product.price }} EGP</div>
+
+        {% if product.in_stock %}
+            <p class="stock-status in">In stock ({{ product.stock }} available)</p>
+        {% else %}
+            <p class="stock-status out">Out of stock</p>
+        {% endif %}
+
+        <p>{{ product.description }}</p>
+
+        {% if product.in_stock %}
+            <form method="post" action="{% url 'cart:cart_add' product.id %}">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.path }}">
+                <label for="id_quantity">Quantity</label>
+                <input type="number" id="id_quantity" name="quantity" value="1" min="1" max="{{ product.stock }}" style="width:80px;">
+                <button class="btn" type="submit">Add to Cart</button>
+            </form>
+        {% else %}
+            <button class="btn" disabled>Out of Stock</button>
+        {% endif %}
+    </div>
+</div>
+
+{% if related_products %}
+    <h2 style="margin-top:30px;">You may also like</h2>
+    <div class="product-grid">
+        {% for p in related_products %}
+            <div class="product-card">
+                {% if p.image %}<img src="{{ p.image.url }}" alt="{{ p.title }}">{% else %}<div class="no-image">No image</div>{% endif %}
+                <div class="product-card-body">
+                    <h3>{{ p.title }}</h3>
+                    <div class="price">{{ p.price }} EGP</div>
+                    <a class="btn" href="{% url 'shop:product_detail' p.slug %}">View</a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+{% endblock %}

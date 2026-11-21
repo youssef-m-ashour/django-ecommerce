@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Order #{{ order.id }}{% endblock %}
+{% block content %}
+<h1>Order #{{ order.id }}</h1>
+<p><strong>Date:</strong> {{ order.created_at|date:"M d, Y H:i" }}</p>
+<p><strong>Shipping to:</strong> {{ order.full_name }}, {{ order.address }}, {{ order.city }} &mdash; {{ order.phone }}</p>
+
+<table class="order-items-table">
+    <thead>
+        <tr><th>Product</th><th>Price</th><th>Qty</th><th>Subtotal</th></tr>
+    </thead>
+    <tbody>
+        {% for item in order.items.all %}
+            <tr>
+                <td>{{ item.product.title }}</td>
+                <td>{{ item.price }} EGP</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.get_subtotal }} EGP</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<p class="total" style="margin-top:16px;">Total: {{ order.total_price }} EGP</p>
+
+<a class="btn" href="{% url 'orders:order_history' %}">Back to Orders</a>
+{% endblock %}
